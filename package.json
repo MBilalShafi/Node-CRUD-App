@@ -13,6 +13,7 @@
   "author": "Bilal Shafi",
   "license": "UNLICENCED",
   "dependencies": {
+    "ejs": "^2.5.6",
     "express": "^4.15.3",
     "mongodb": "^2.2.30"
   },
