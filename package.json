@@ -1,0 +1,22 @@
+{
+  "name": "node-crud-app",
+  "version": "1.0.0",
+  "description": "CRUD app by Bilal for the evaluation Task assigned by Touchline creative.",
+  "main": "app.js",
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "keywords": [
+    "node",
+    "ejs"
+  ],
+  "author": "Bilal Shafi",
+  "license": "UNLICENCED",
+  "dependencies": {
+    "express": "^4.15.3",
+    "mongodb": "^2.2.30"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
