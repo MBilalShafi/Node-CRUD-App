@@ -1,13 +1,11 @@
-const express = require('express');
-const app = express();
+var http = require("http");
 
-app.listen(3000, function(){
+var server = http.createServer(function(req, res){
 
-    console.log("Listening on port 3000");
+    //
+    res.writeHead(200, {'Content-Type': 'text/plain'})
+    res.end("Text response");
+
 });
-
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + '/www/index.html')
-  console.log(`Sent file to client ${req.hostname}`);
-  
-});
+server.listen(3000);
+console.log("Listening on port 3000");
