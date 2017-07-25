@@ -1,14 +1,21 @@
-var express = require("express");
+const express = require("express");
+//const router = express.Router();
 
-var app=express();
+const app=express();
 
-app.set('view engine', 'ejs');
 
 app.get('/', function(req, res){
-  res.send("This is a text response");
-  console.log(`Sent a text response to ${req.ip}`);
+  console.log(`A GET request for ${req.url}`);
+  res.send("This address is not accessible to every person on the earth.");
+});
+
+app.get('/api', function(req, res){
+  console.log(`A GET request for ${req.url}`);
+  res.send({'message':'This is api.'});
 });
 
 
-app.listen(3000);
-console.log("Listening on port 3000");
+
+app.listen(4000, function(){
+    console.log("Listening on port 4000");
+});
