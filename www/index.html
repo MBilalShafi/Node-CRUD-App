@@ -1,11 +1,309 @@
+<!DOCTYPE html>
 <html>
-<head>
-<title>
-  CRUD App with Node, Express and Mongo
-</title>
-</head>
-<body>
-  <h1>CRUD App :)</h1>
-  <p>Lorem ipsum</p>
-</body>
+    <head>
+        <meta charset="utf-8">
+        <title>Users CRUD</title>
+        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+
+        <h1 class="title">User CRUD Application - Bilal - Touchline</h1>
+        <div id="homepage">
+            <h1>Users and there scores:</h1>
+            <div id="users"></div>
+        </div>
+
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <script src="https://unpkg.com/react@15/dist/react.js"></script>
+        <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+
+        <!-- Create React Component -->
+        <script type="text/babel">
+        var Users = React.createClass({
+            getInitialState: function(){
+
+                return({
+                    users: [],
+                    showEdit:false,
+                    editID:-1,
+                    editName:"",
+                    editAge:"",
+                    editGender:"",
+                    editScore:""
+                });
+            },
+            render: function(){
+                var users = this.state.users;
+                //this.deleteValue=this.deleteValue.bind(this);
+                users = users.map(function(user, index){
+                    return(
+                        <li key={index}>
+                            <span className="true"></span>
+                            <span className="name">{user.name}</span>
+                            <span className="rank">{user.age} - {user.gender}</span>
+                            <span className="dist">{user.score} &nbsp; &nbsp; &nbsp;
+                            <input type="button" id={user._id} value="X" onClick={this.deleteValue} />
+                            <input type="button" id={user._id} value="U" onClick={this.editValue} />
+                            </span>
+                        </li>
+                    );
+                }, this);
+                var style="display: none";
+                if (this.state.showEdit){
+                  style="display: block";
+                }
+
+                var editId=this.state.editID;
+                var nname=this.state.editName;
+                return(
+
+                    <div id="user-container">
+                        <form id="search" onSubmit={this.handleSubmit}>
+
+                            <input type="submit" value="Show Users" />
+                        </form>
+                        <ul>{users}</ul>
+                        <hr />
+                        <h1>Add new User:</h1>
+                        <form id="add" onSubmit={this.handleSubmitAdder}>
+                            <label>Enter your Name:</label>
+                            <input type="text" ref="name" placeholder="name" required />
+                            <label>Enter your Age:</label>
+                            <input type="text" ref="age" placeholder="age" required />
+                            <label>Enter your Gender:</label>
+                            <input type="text" ref="gender" placeholder="gender" required />
+                            <label>Enter your Score:</label>
+                            <input type="text" ref="score" placeholder="score" required />
+                            <input type="submit" value="Add User" />
+                        </form>
+                        <hr />
+                        <h1>Edit Existing User:</h1>
+                        <form id="edit" onSubmit={this.handleEditAdder}>
+                            <label>ID:</label>
+                            <input type="text" id="editID" ref="id" placeholder="id" value={editId} required />
+                            <label>Enter your Name:</label>
+                            <input type="text" id="editName" ref="name" placeholder="name" value={this.state.editName} onChange={e => this.onTodoNameChange(e.target.value)} required />
+                            <label>Enter your Age:</label>
+                            <input type="text" id="editAge" ref="age" placeholder="age" value={this.state.editAge} onChange={e => this.onTodoAgeChange(e.target.value)} required />
+                            <label>Enter your Gender:</label>
+                            <input type="text" id="editGender" ref="gender" placeholder="gender" value={this.state.editGender} onChange={e => this.onTodoGenderChange(e.target.value)} required />
+                            <label>Enter your Score:</label>
+                            <input type="text" id="editScore" ref="score" placeholder="score" value={this.state.editScore} onChange={e => this.onTodoScoreChange(e.target.value)} required />
+                            <input type="submit" value="Edit User" />
+                        </form>
+                    </div>
+
+
+
+
+                );
+            },
+            handleSubmit: function(e){
+                e.preventDefault();
+
+                fetch('/api/users?show=true').then(function(data){
+                    return data.json();
+                }).then( json => {
+                    this.setState({
+                        users: json
+                    });
+                    console.log(json);
+                });
+            },
+            handleSubmitAdder: function(e){
+              //var users = this.state.users;
+
+                e.preventDefault();
+                console.log(e);
+                var _name = this.refs.name.value;
+                var _age = this.refs.age.value;
+                var _gender = this.refs.gender.value;
+                var _score = this.refs.score.value;
+
+                fetch('/api/users', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    name: _name,
+                    age:_age,
+                    gender:_gender,
+                    score:_score,
+                  })
+                })
+                .then(function(data){
+                    //console.log(data.json());
+                    //console.log(this.state.users);
+                    //this.state.users.concat(data.json());
+                    return data.json();
+
+
+                }).then(json => {
+                      this.setState({
+                        users: this.state.users.concat(json)
+                      })
+                    //handleSubmit();
+                });
+
+
+            },
+            handleEditAdder: function(e){
+              //var users = this.state.users;
+
+                e.preventDefault();
+                console.log(e);
+                var id=this.refs.id.value;
+                var _name = this.refs.name.value;
+                var _age = this.refs.age.value;
+                var _gender = this.refs.gender.value;
+                var _score = this.refs.score.value;
+
+                fetch('/api/users/'+id, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    name: _name,
+                    age:_age,
+                    gender:_gender,
+                    score:_score,
+                  })
+                })
+                .then(function(data){
+                    //console.log(data.json());
+                    //console.log(this.state.users);
+                    //this.state.users.concat(data.json());
+                    return data.json();
+
+
+                }).then(json => {
+                  var data= this.state.users;
+                  var index = -1;
+                  var val = id;
+                  var filteredIndex = data.find(function(item, i){
+                    if(item._id === val){
+                      index = i;
+                      return i;
+                    }
+                  })
+
+                  data.splice(index,1);
+                  //data.concat(json);
+                  console.log(data);
+                  this.setState({
+                    users: data
+                  })
+                  this.setState({
+                    users: this.state.users.concat(json)
+                  })
+                });
+
+
+            },
+            deleteValue: function(e){
+              e.preventDefault();
+              var IdToDelete=e.target.id;
+              //console.log(IdToDelete);
+
+              fetch('/api/users/'+IdToDelete, {
+                method: 'DELETE'
+
+              })
+              .then(function(data){
+                  //console.log(data.json());
+                  //console.log(this.state.users);
+                  //this.state.users.concat(data.json());
+                  return data.json();
+
+
+              }).then(json => {
+
+
+                    // update array and delete deleted element from it
+                    var data= this.state.users;
+                    var index = -1;
+                    var val = IdToDelete;
+                    var filteredIndex = data.find(function(item, i){
+                      if(item._id === val){
+                        index = i;
+                        return i;
+                      }
+                    })
+
+                    data.splice(index,1);
+                    this.setState({
+                      users: data
+                    })
+                  //handleSubmit();
+                  console.log(json);
+              });
+
+
+            },
+            editValue: function(e){
+              var IdToEdit=e.target.id;
+              var data= this.state.users;
+              var index = -1;
+              var val = IdToEdit;
+              var eName;
+              var eAge;
+              var eGender;
+              var eScore;
+              data.find(function(item, i){
+                if(item._id === val){
+                  index = i;
+
+
+                    eName= item.name;
+                    eAge= item.age;
+                    eGender= item.gender;
+                    eScore= item.score;
+
+                }
+              });
+              this.setState({
+                editID: IdToEdit,
+                editName: eName,
+                editAge: eAge,
+                editGender: eGender,
+                editScore: eScore
+              })
+
+              //document.getElementById('edit').style={{display: 'block'}};
+            },
+            onTodoNameChange: function(val){
+              this.setState({
+                editName: val
+              })
+            },
+            onTodoAgeChange: function(val){
+              this.setState({
+                editAge: val
+              })
+            },
+            onTodoGenderChange: function(val){
+              this.setState({
+                editGender: val
+              })
+            },
+            onTodoScoreChange: function(val){
+              this.setState({
+                editScore: val
+              })
+            }
+        });
+        ReactDOM.render(<Users />, document.getElementById('users'));
+        </script>
+
+        <!--
+        <label>Enter your Latitude:</label>
+        <input type="text" ref="lat" placeholder="latitude" required />
+        <label>Enter your Longitude:</label>
+        <input type="text" ref="lng" placeholder="longitude" required />
+        -->
+    </body>
 </html>
