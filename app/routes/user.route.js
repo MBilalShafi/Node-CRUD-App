@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/users");
+const User = require("../model/user.model");
+
+//Middleware
+var userMiddleware = require('../middleware/user.middleware');
+
+//Controller
+var userController = require('../controller/user.controller');
 
 // get by ID
 /*
@@ -19,7 +25,7 @@ router.get('/users', function(req, res, next){
 // get all
 
 router.get('/users', function(req, res, next){
-  console.log('get request recvd');
+//  console.log('get request recvd');
   User.find({}).then(function(users){
     res.send(users);
   }).catch(function(err){
@@ -28,7 +34,7 @@ router.get('/users', function(req, res, next){
   });
 });
 
-
+/*
 router.post('/users', function(req, res, next){
   console.log(req.body);
   //var user = new User(req.body);
@@ -39,6 +45,10 @@ router.post('/users', function(req, res, next){
   }).catch(next);
 
 });
+*/
+
+
+router.post('/users', userMiddleware.validateUserRequest, userController.controlUserRequest);
 
 router.put('/users/:id', function(req, res, next){
   User.findByIdAndUpdate({_id: req.params.id}, req.body).then(function(){

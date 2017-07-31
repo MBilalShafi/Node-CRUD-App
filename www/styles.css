@@ -35,6 +35,10 @@ form{
     max-width: 350px;
     margin: 30px auto;
 }
+.pee{
+  text-align:center;
+  color: red;
+}
 input[type="submit"]{
     background: #555;
      color: #fff;

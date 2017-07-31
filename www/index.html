@@ -22,6 +22,7 @@
         <!-- Create React Component -->
         <script type="text/babel">
         var Users = React.createClass({
+          //this.handleSubmit = this.handleSubmit.bind(this);
             getInitialState: function(){
 
                 return({
@@ -31,7 +32,9 @@
                     editName:"",
                     editAge:"",
                     editGender:"",
-                    editScore:""
+                    editScore:"",
+                    name : null,
+                    errorMessage: ""
                 });
             },
             render: function(){
@@ -57,6 +60,7 @@
 
                 var editId=this.state.editID;
                 var nname=this.state.editName;
+
                 return(
 
                     <div id="user-container">
@@ -69,14 +73,17 @@
                         <h1>Add new User:</h1>
                         <form id="add" onSubmit={this.handleSubmitAdder}>
                             <label>Enter your Name:</label>
-                            <input type="text" ref="name" placeholder="name" required />
+                            <input type="text" ref="name01" id="name01" placeholder="name"  />
                             <label>Enter your Age:</label>
-                            <input type="text" ref="age" placeholder="age" required />
+                            <input type="text" ref="age01" placeholder="age"  />
                             <label>Enter your Gender:</label>
-                            <input type="text" ref="gender" placeholder="gender" required />
+                            <input type="text" ref="gender01" placeholder="gender"  />
                             <label>Enter your Score:</label>
-                            <input type="text" ref="score" placeholder="score" required />
+                            <input type="text" ref="score01" placeholder="score"  />
                             <input type="submit" value="Add User" />
+                            <p className="pee" align="center">
+                                {this.state.errorMessage}
+                            </p>
                         </form>
                         <hr />
                         <h1>Edit Existing User:</h1>
@@ -99,6 +106,7 @@
 
 
                 );
+
             },
             handleSubmit: function(e){
                 e.preventDefault();
@@ -115,13 +123,16 @@
             handleSubmitAdder: function(e){
               //var users = this.state.users;
 
+                //console.log("The vaalue : "+ this.refs.name.value);
                 e.preventDefault();
-                console.log(e);
-                var _name = this.refs.name.value;
-                var _age = this.refs.age.value;
-                var _gender = this.refs.gender.value;
-                var _score = this.refs.score.value;
-
+                // console.log(e);
+                var _name = this.refs.name01.value;
+                //var _name = document.getElementById('name01').value;
+                //alert(_name);
+                var _age = this.refs.age01.value;
+                var _gender = this.refs.gender01.value;
+                var _score = this.refs.score01.value;
+                console.log("Picking data: "+_name+_age);
                 fetch('/api/users', {
                   method: 'POST',
                   headers: {
@@ -135,16 +146,31 @@
                   })
                 })
                 .then(function(data){
-                    //console.log(data.json());
-                    //console.log(this.state.users);
-                    //this.state.users.concat(data.json());
+
                     return data.json();
 
 
                 }).then(json => {
+                  console.log(json.STATUS);
+                  if(json.STATUS){
                       this.setState({
-                        users: this.state.users.concat(json)
-                      })
+                        users: this.state.users.concat(json),
+                        errorMessage: json.MESSAGE
+                        //errorMessage: ""
+
+                      });
+                  }
+                  else {
+                    this.setState({
+                        errorMessage: json.MESSAGE
+
+                    });
+                  }
+
+                      //var jsArr=[];
+                      //jsArr=json;
+                      //console.log(jsArr.status);
+                      console.log(json);
                     //handleSubmit();
                 });
 
@@ -236,7 +262,8 @@
 
                     data.splice(index,1);
                     this.setState({
-                      users: data
+                      users: data,
+                      errorMessage: "User has been deleted."
                     })
                   //handleSubmit();
                   console.log(json);
@@ -270,7 +297,8 @@
                 editName: eName,
                 editAge: eAge,
                 editGender: eGender,
-                editScore: eScore
+                editScore: eScore,
+                errorMessage: "User has been edited."
               })
 
               //document.getElementById('edit').style={{display: 'block'}};
